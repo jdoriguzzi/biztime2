@@ -1,6 +1,7 @@
 const express = require("express")
 const db = require("../db")
 const ExpressError = require("../expressError")
+const slugify = require("slugify");
 
 const router = new express.Router()
 
@@ -44,7 +45,7 @@ router.get("/", async function (req, res, next) {
   
       let company = result.rows[0]
       let invoices = invoicesResult.rows
-      company.invoices = invoices.map(inv => inv)
+      company.invoices = invoices.map(inv => inv.id)
 
       return res.json({"company": company})
     }
@@ -57,7 +58,8 @@ router.get("/", async function (req, res, next) {
 
   router.post("/", async function (req, res, next) {
     try {
-        const {code, name, description} = req.body
+        const {name, description} = req.body
+        let code = slugify(name, {lower: true});
   
         const result = await db.query(
             `INSERT INTO companies (code, name, description) 
@@ -65,7 +67,7 @@ router.get("/", async function (req, res, next) {
             RETURNING code, name, description`,
             [code, name, description])
   
-      return res.status(201).json({"company": result.rows})
+      return res.status(201).json({"company": result.rows[0]})
     }
   
     catch (e) {
@@ -89,7 +91,7 @@ router.get("/", async function (req, res, next) {
       if (result.rows.length === 0) {
           throw new ExpressError(`Company not found: ${code}`, 404)
       } else {
-          return res.json({"company": result.rows})
+          return res.json({"company": result.rows[0]})
       }
     }
   
