@@ -42,10 +42,20 @@ router.get("/", async function (req, res, next) {
          WHERE comp_code = $1`,
          [code]
       )
+
+      let industriesResult = await db.query(
+        `SELECT *
+         FROM company_industry
+         WHERE comp_code = $1`,
+         [code]
+      )
+  
   
       let company = result.rows[0]
       let invoices = invoicesResult.rows
+      let industries = industriesResult.rows
       company.invoices = invoices.map(inv => inv.id)
+      company.industries = industries.map(ind => ind.ind_code)
 
       return res.json({"company": company})
     }

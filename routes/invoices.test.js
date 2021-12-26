@@ -68,8 +68,8 @@ describe("GET /1", function () {
   })
 
   test("It should return 404 for invoice not found", async function () {
-    const response = await request(app).get("/invoices/22");
-    expect(response.status).toEqual(404);
+      const response = await request(app).get("/invoices/22")
+      expect(response.status).toEqual(404)
   })
 })
 
@@ -79,7 +79,7 @@ describe("POST /", function () {
   test("It should add invoice", async function () {
     const response = await request(app)
         .post("/invoices")
-        .send({amt: 500, comp_code: 'ibm'});
+        .send({amt: 500, comp_code: 'ibm'})
 
     expect(response.body).toEqual(
         {
